@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agentic Chatbot Starter — Demo</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+    .hero {
+      max-width: 720px;
+      margin: 80px auto;
+      padding: 0 24px;
+      text-align: center;
+    }
+    h1 { font-size: 2.5rem; font-weight: 700; margin-bottom: 16px; }
+    .subtitle {
+      font-size: 1.2rem;
+      color: #64748b;
+      margin-bottom: 32px;
+    }
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      text-align: left;
+      margin-top: 48px;
+    }
+    .feature {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+    }
+    .feature h3 { font-size: 1rem; margin-bottom: 8px; }
+    .feature p { font-size: 0.9rem; color: #64748b; }
+    code {
+      background: #f1f5f9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    .cta {
+      margin-top: 32px;
+      font-size: 1rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>🤖 Agentic Chatbot Starter</h1>
+    <p class="subtitle">
+      Drop-in AI chatbot widget with multi-provider support.<br>
+      Embed in any website in under 5 minutes.
+    </p>
+
+    <div class="features">
+      <div class="feature">
+        <h3>🔌 Multi-Provider</h3>
+        <p>OpenAI, Anthropic, and Google Gemini. Switch with one env var.</p>
+      </div>
+      <div class="feature">
+        <h3>⚡ Streaming</h3>
+        <p>Real-time SSE streaming for instant, token-by-token responses.</p>
+      </div>
+      <div class="feature">
+        <h3>🎨 Embeddable Widget</h3>
+        <p>One <code>&lt;script&gt;</code> tag. No build step. Fully customizable CSS.</p>
+      </div>
+      <div class="feature">
+        <h3>🛡️ Production Ready</h3>
+        <p>Rate limiting, CORS, Helmet security, input validation with Zod.</p>
+      </div>
+      <div class="feature">
+        <h3>🧪 Tested</h3>
+        <p>Unit and integration tests. Type-safe with TypeScript throughout.</p>
+      </div>
+      <div class="feature">
+        <h3>📖 Clean Architecture</h3>
+        <p>Routes → Controllers → Services → Providers. Easy to extend.</p>
+      </div>
+    </div>
+
+    <p class="cta">👇 Click the chat bubble in the corner to try it out.</p>
+  </div>
+
+  <!-- Chatbot widget embed — this is all you need -->
+  <script src="/js/widget.js"
+          data-server=""
+          data-title="Chat with us"
+          data-greeting="Hi! I'm a demo chatbot. Ask me anything!"
+          data-stream="true">
+  </script>
+</body>
+</html>
