@@ -24,7 +24,7 @@
     "customer-support",
     "agentic"
   ],
-  "author": "Tony Goggin <tony@chooseyourownapp.com>",
+  "author": "Tony Goggin <tony@tonygoggin.com>",
   "license": "MIT",
   "engines": {
     "node": ">=20.0.0"
