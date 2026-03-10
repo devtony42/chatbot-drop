@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>chatbot-drop — Live Demo</title>
+  <meta name="description" content="Try the chatbot-drop widget. Interactive demo with simulated AI responses.">
+  <style>
+    :root {
+      --brand: #2563eb;
+      --brand-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --text: #1e293b;
+      --text-dim: #64748b;
+      --border: #e2e8f0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .page {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 24px;
+    }
+    .back { color: var(--brand); font-size: 0.9rem; display: inline-block; margin-bottom: 24px; text-decoration: none; }
+    .back:hover { text-decoration: underline; }
+    h1 { font-size: 2rem; margin-bottom: 8px; }
+    .subtitle { color: var(--text-dim); margin-bottom: 32px; font-size: 1.05rem; }
+    .demo-note {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 32px;
+      font-size: 0.9rem;
+      color: #1e40af;
+    }
+    .demo-note strong { color: #1e3a8a; }
+    .sample-page {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px;
+      min-height: 500px;
+    }
+    .sample-page h2 { font-size: 1.4rem; margin-bottom: 12px; }
+    .sample-page p { color: var(--text-dim); margin-bottom: 16px; }
+    .sample-page .fake-content {
+      height: 12px;
+      background: #f1f5f9;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .sample-page .fake-content.short { width: 60%; }
+    .sample-page .fake-content.medium { width: 80%; }
+    .sample-page .fake-img {
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(135deg, #e0e7ff, #f0f9ff);
+      border-radius: 10px;
+      margin: 24px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+    .embed-code {
+      background: #1e293b;
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-top: 32px;
+      overflow-x: auto;
+    }
+    .embed-code pre {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.85rem;
+      color: #94a3b8;
+      line-height: 1.7;
+    }
+    .embed-code .tag { color: #f472b6; }
+    .embed-code .attr { color: #60a5fa; }
+    .embed-code .str { color: #34d399; }
+    .embed-code .comment { color: #475569; }
+
+    /* Widget styles (self-contained for the demo) */
+    .acw-container {
+      --acw-primary: #2563eb;
+      --acw-primary-hover: #1d4ed8;
+      --acw-bg: #ffffff;
+      --acw-bg-message: #f1f5f9;
+      --acw-bg-user: #2563eb;
+      --acw-text: #1e293b;
+      --acw-text-light: #64748b;
+      --acw-text-user: #ffffff;
+      --acw-border: #e2e8f0;
+      --acw-radius: 12px;
+      --acw-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+      --acw-font: system-ui, -apple-system, sans-serif;
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 99999;
+      font-family: var(--acw-font);
+    }
+    .acw-toggle {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--acw-primary); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--acw-shadow); transition: background 0.2s, transform 0.2s;
+    }
+    .acw-toggle:hover { background: var(--acw-primary-hover); transform: scale(1.05); }
+    .acw-toggle svg { width: 24px; height: 24px; fill: white; }
+    .acw-panel {
+      display: none; flex-direction: column;
+      width: 380px; height: 520px;
+      background: var(--acw-bg); border-radius: var(--acw-radius);
+      box-shadow: var(--acw-shadow); overflow: hidden;
+      border: 1px solid var(--acw-border);
+    }
+    .acw-panel.acw-open { display: flex; }
+    .acw-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px; background: var(--acw-primary); color: white;
+    }
+    .acw-header-title { font-size: 16px; font-weight: 600; margin: 0; }
+    .acw-close {
+      background: none; border: none; color: white; cursor: pointer;
+      font-size: 20px; line-height: 1; padding: 0 4px; opacity: 0.8;
+    }
+    .acw-close:hover { opacity: 1; }
+    .acw-messages {
+      flex: 1; overflow-y: auto; padding: 16px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .acw-message {
+      max-width: 80%; padding: 10px 14px; border-radius: var(--acw-radius);
+      font-size: 14px; line-height: 1.5; word-wrap: break-word;
+    }
+    .acw-message-assistant { align-self: flex-start; background: var(--acw-bg-message); color: var(--acw-text); }
+    .acw-message-user { align-self: flex-end; background: var(--acw-bg-user); color: var(--acw-text-user); }
+    .acw-typing {
+      align-self: flex-start; padding: 10px 14px;
+      background: var(--acw-bg-message); border-radius: var(--acw-radius); display: none;
+    }
+    .acw-typing.acw-visible { display: block; }
+    .acw-typing-dots { display: flex; gap: 4px; }
+    .acw-typing-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--acw-text-light); animation: acw-bounce 1.2s ease-in-out infinite;
+    }
+    .acw-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+    .acw-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes acw-bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); }
+    }
+    .acw-input-area {
+      display: flex; padding: 12px; gap: 8px;
+      border-top: 1px solid var(--acw-border);
+    }
+    .acw-input {
+      flex: 1; padding: 10px 14px; border: 1px solid var(--acw-border);
+      border-radius: 24px; font-size: 14px; font-family: var(--acw-font);
+      outline: none; transition: border-color 0.2s;
+    }
+    .acw-input:focus { border-color: var(--acw-primary); }
+    .acw-send {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--acw-primary); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s; flex-shrink: 0;
+    }
+    .acw-send:hover { background: var(--acw-primary-hover); }
+    .acw-send:disabled { opacity: 0.5; cursor: not-allowed; }
+    .acw-send svg { width: 18px; height: 18px; fill: white; }
+
+    @media (max-width: 480px) {
+      .acw-panel { width: calc(100vw - 32px); height: calc(100vh - 120px); }
+      .sample-page { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <a href="./" class="back">← Back to docs</a>
+    <h1>🎮 Interactive Demo</h1>
+    <p class="subtitle">Click the chat bubble in the bottom-right corner. This is exactly what your users see.</p>
+
+    <div class="demo-note">
+      <strong>ℹ️ Simulated responses.</strong> This demo uses pre-built responses to show the widget experience. Connect to your own backend with a real API key for actual AI responses.
+    </div>
+
+    <div class="sample-page">
+      <h2>Your Website</h2>
+      <p>This represents any page on your site. The chatbot widget floats in the corner, ready when your visitors need help.</p>
+      <div class="fake-content"></div>
+      <div class="fake-content medium"></div>
+      <div class="fake-content short"></div>
+      <div class="fake-img">🖼️ Your content here</div>
+      <div class="fake-content"></div>
+      <div class="fake-content medium"></div>
+      <div class="fake-content short"></div>
+    </div>
+
+    <div class="embed-code">
+      <pre><span class="comment">&lt;!-- Add this to any page --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="str">"https://your-server.com/js/widget.js"</span>
+        <span class="attr">data-server</span>=<span class="str">"https://your-server.com"</span>
+        <span class="attr">data-title</span>=<span class="str">"Chat with us"</span>
+        <span class="attr">data-stream</span>=<span class="str">"true"</span><span class="tag">&gt;&lt;/script&gt;</span></pre>
+    </div>
+  </div>
+
+  <!-- Self-contained demo widget with simulated responses -->
+  <div class="acw-container">
+    <div class="acw-panel" id="acw-panel">
+      <div class="acw-header">
+        <h3 class="acw-header-title">Chat with us</h3>
+        <button class="acw-close" id="acw-close" aria-label="Close chat">&times;</button>
+      </div>
+      <div class="acw-messages" id="acw-messages">
+        <div class="acw-message acw-message-assistant">Hi! 👋 I'm a demo chatbot powered by chatbot-drop. Try asking me something!</div>
+      </div>
+      <div class="acw-typing" id="acw-typing">
+        <div class="acw-typing-dots">
+          <span class="acw-typing-dot"></span>
+          <span class="acw-typing-dot"></span>
+          <span class="acw-typing-dot"></span>
+        </div>
+      </div>
+      <div class="acw-input-area">
+        <input class="acw-input" id="acw-input" type="text" placeholder="Type a message..." autocomplete="off" />
+        <button class="acw-send" id="acw-send" aria-label="Send message">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+    <button class="acw-toggle" id="acw-toggle" aria-label="Open chat">
+      <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+    </button>
+  </div>
+
+  <script>
+    (function () {
+      const responses = [
+        "I can answer questions, help with tasks, and have natural conversations. With chatbot-drop, I support OpenAI, Anthropic, and Google Gemini — all with one codebase!",
+        "Setting up is super simple: clone the repo, add your API key to `.env`, and run `npm run dev`. The widget embeds with just one `<script>` tag.",
+        "Great question! The widget supports real-time streaming via Server-Sent Events, so you see responses appear token-by-token. It feels much more natural than waiting for the full response.",
+        "The architecture is clean: Routes → Controllers → Services → Providers. Adding a new AI provider means implementing one interface. Everything is TypeScript with strict mode.",
+        "Security is built in — Helmet headers, CORS, rate limiting, and Zod validation on every endpoint. It's production-ready out of the box.",
+        "You can customize everything with CSS variables! Change `--acw-primary` to match your brand color, adjust border radius, fonts — all scoped to the widget so it won't affect your site.",
+        "This is an open source project under the MIT license. Use it commercially, modify it, build on it — no restrictions. Check out the GitHub repo for the full source!",
+        "The best part? It's framework-agnostic. Works with React, Vue, Svelte, WordPress, static HTML — anything that can load a script tag.",
+      ];
+
+      let responseIndex = 0;
+      let isWaiting = false;
+
+      const toggle = document.getElementById("acw-toggle");
+      const close = document.getElementById("acw-close");
+      const panel = document.getElementById("acw-panel");
+      const input = document.getElementById("acw-input");
+      const send = document.getElementById("acw-send");
+      const messages = document.getElementById("acw-messages");
+      const typing = document.getElementById("acw-typing");
+
+      toggle.addEventListener("click", () => {
+        panel.classList.add("acw-open");
+        toggle.style.display = "none";
+        input.focus();
+      });
+
+      close.addEventListener("click", () => {
+        panel.classList.remove("acw-open");
+        toggle.style.display = "flex";
+      });
+
+      send.addEventListener("click", handleSend);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }
+      });
+
+      function handleSend() {
+        const text = input.value.trim();
+        if (!text || isWaiting) return;
+        input.value = "";
+        appendMessage("user", text);
+        simulateResponse();
+      }
+
+      function simulateResponse() {
+        isWaiting = true;
+        send.disabled = true;
+        typing.classList.add("acw-visible");
+        messages.scrollTop = messages.scrollHeight;
+
+        const response = responses[responseIndex % responses.length];
+        responseIndex++;
+
+        // Simulate streaming with character-by-character reveal
+        setTimeout(() => {
+          typing.classList.remove("acw-visible");
+          const el = appendMessage("assistant", "");
+          let i = 0;
+          const interval = setInterval(() => {
+            el.textContent += response[i];
+            i++;
+            messages.scrollTop = messages.scrollHeight;
+            if (i >= response.length) {
+              clearInterval(interval);
+              isWaiting = false;
+              send.disabled = false;
+              input.focus();
+            }
+          }, 18);
+        }, 800 + Math.random() * 400);
+      }
+
+      function appendMessage(role, content) {
+        const div = document.createElement("div");
+        div.className = `acw-message acw-message-${role}`;
+        div.textContent = content;
+        messages.appendChild(div);
+        messages.scrollTop = messages.scrollHeight;
+        return div;
+      }
+    })();
+  </script>
+</body>
+</html>
