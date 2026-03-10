@@ -21,7 +21,7 @@ Drop-in AI chatbot widget with multi-provider support. Embed in any website in u
 
 ```bash
 # Clone
-git clone https://github.com/chooseyourownapp/agentic-chatbot-starter.git
+git clone https://github.com/devtony42/chatbot-drop.git
 cd agentic-chatbot-starter
 
 # Install
@@ -196,4 +196,4 @@ MIT — use it however you want.
 
 ## Author
 
-**Tony Goggin** — [chooseyourownapp.com](https://chooseyourownapp.com)
+**Tony Goggin** — [tonygoggin.com](https://tonygoggin.com)
