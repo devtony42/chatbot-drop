@@ -1,6 +1,11 @@
-# 🤖 Agentic Chatbot Starter
+# 🤖 chatbot-drop
 
 Drop-in AI chatbot widget with multi-provider support. Embed in any website in under 5 minutes.
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/devtony42/chatbot-drop)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/template/from-repo?repo=devtony42/chatbot-drop)
+
+**[📖 Documentation](https://devtony42.github.io/chatbot-drop/)** · **[🎮 Live Demo](https://devtony42.github.io/chatbot-drop/demo.html)**
 
 ## Features
 
