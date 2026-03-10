@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>chatbot-drop — Drop-in AI Chatbot Widget</title>
+  <meta name="description" content="Open source, multi-provider AI chatbot widget. One script tag. Streaming. OpenAI, Anthropic, Gemini.">
+  <style>
+    :root {
+      --brand: #2563eb;
+      --brand-dark: #1d4ed8;
+      --bg: #0f172a;
+      --bg-card: #1e293b;
+      --text: #f1f5f9;
+      --text-dim: #94a3b8;
+      --border: #334155;
+      --green: #22c55e;
+      --radius: 12px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--brand); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Nav */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }
+    .nav-logo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { color: var(--text-dim); font-size: 0.9rem; }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 60px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(37, 99, 235, 0.15);
+      color: var(--brand);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--text-dim);
+      max-width: 560px;
+      margin: 0 auto 36px;
+    }
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--brand);
+      color: white;
+    }
+    .btn-primary:hover {
+      background: var(--brand-dark);
+      text-decoration: none;
+    }
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      border-color: var(--text-dim);
+      text-decoration: none;
+    }
+
+    /* Code preview */
+    .code-section {
+      max-width: 700px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+    }
+    .code-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      overflow-x: auto;
+      position: relative;
+    }
+    .code-label {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    pre {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text-dim);
+    }
+    pre .tag { color: #f472b6; }
+    pre .attr { color: #60a5fa; }
+    pre .str { color: #34d399; }
+    pre .comment { color: #475569; }
+
+    /* Features */
+    .features {
+      max-width: 1100px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+    }
+    .features h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 48px;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: border-color 0.2s;
+    }
+    .feature-card:hover {
+      border-color: var(--brand);
+    }
+    .feature-icon {
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+    }
+    .feature-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+    .feature-card p {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+    }
+
+    /* Architecture */
+    .arch-section {
+      max-width: 800px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+    }
+    .arch-section h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 32px;
+    }
+    .arch-diagram {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      text-align: center;
+    }
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+    }
+    .arch-box {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      border-radius: 8px;
+    }
+    .arch-box.highlight {
+      border-color: var(--brand);
+      color: var(--brand);
+    }
+    .arch-arrow { color: var(--text-dim); }
+
+    /* Providers */
+    .providers {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 60px 0;
+      flex-wrap: wrap;
+    }
+    .provider {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+    .provider-name {
+      font-size: 1.5rem;
+      margin-bottom: 4px;
+    }
+
+    /* Quick start */
+    .quickstart {
+      max-width: 700px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+    }
+    .quickstart h2 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 32px;
+    }
+    .step {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--brand);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .step-content { flex: 1; }
+    .step-content h4 { margin-bottom: 4px; }
+    .step-content p { color: var(--text-dim); font-size: 0.9rem; }
+    .step-code {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-top: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--green);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--text-dim); }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 2.2rem; }
+      .hero { padding: 60px 24px 40px; }
+      .arch-flow { flex-direction: column; }
+      .arch-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-logo">🤖 chatbot-drop</div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#quickstart">Quick Start</a>
+      <a href="https://github.com/devtony42/chatbot-drop">GitHub</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <span class="badge">Open Source · MIT License</span>
+    <h1>Drop an AI chatbot into any website</h1>
+    <p>Multi-provider, streaming, embeddable in one script tag. OpenAI, Anthropic, and Gemini — switch with one env var.</p>
+    <div class="cta-row">
+      <a href="https://github.com/devtony42/chatbot-drop" class="btn btn-primary">
+        ⭐ View on GitHub
+      </a>
+      <a href="#quickstart" class="btn btn-secondary">
+        Get Started →
+      </a>
+    </div>
+  </section>
+
+  <section class="code-section">
+    <div class="code-block">
+      <span class="code-label">Embed</span>
+      <pre><span class="comment">&lt;!-- That's it. One tag. --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="str">"https://your-server.com/js/widget.js"</span>
+        <span class="attr">data-server</span>=<span class="str">"https://your-server.com"</span>
+        <span class="attr">data-title</span>=<span class="str">"Chat with us"</span>
+        <span class="attr">data-greeting</span>=<span class="str">"Hi! How can I help?"</span>
+        <span class="attr">data-stream</span>=<span class="str">"true"</span><span class="tag">&gt;&lt;/script&gt;</span></pre>
+    </div>
+  </section>
+
+  <section class="providers">
+    <div class="provider">
+      <div class="provider-name">🟢</div>
+      OpenAI
+    </div>
+    <div class="provider">
+      <div class="provider-name">🟠</div>
+      Anthropic
+    </div>
+    <div class="provider">
+      <div class="provider-name">🔵</div>
+      Google Gemini
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <h2>Built for production</h2>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔌</div>
+        <h3>Multi-Provider</h3>
+        <p>OpenAI, Anthropic, and Google Gemini out of the box. Switch providers with a single environment variable. Add custom providers by implementing one interface.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Streaming</h3>
+        <p>Real-time Server-Sent Events for instant, token-by-token responses. Users see the AI thinking in real time — no waiting for the full response.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎨</div>
+        <h3>Embeddable Widget</h3>
+        <p>Vanilla JavaScript, zero dependencies. One script tag to embed. CSS custom properties for theming — match any brand in minutes.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3>Security First</h3>
+        <p>Helmet security headers, CORS configuration, rate limiting, and Zod input validation on every endpoint. Production-hardened by default.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🧪</div>
+        <h3>Fully Tested</h3>
+        <p>33 tests covering unit logic, middleware, config validation, and full API integration. Coverage reporting with Vitest + V8.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📐</div>
+        <h3>Clean Architecture</h3>
+        <p>Routes → Controllers → Services → Providers. Each layer has a single responsibility. Extend without touching existing code.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="arch-section">
+    <h2>How it works</h2>
+    <div class="arch-diagram">
+      <div class="arch-flow">
+        <div class="arch-box">Widget</div>
+        <span class="arch-arrow">→</span>
+        <div class="arch-box">Express API</div>
+        <span class="arch-arrow">→</span>
+        <div class="arch-box">ChatService</div>
+        <span class="arch-arrow">→</span>
+        <div class="arch-box highlight">Provider</div>
+      </div>
+      <p style="margin-top: 16px; color: var(--text-dim); font-size: 0.85rem;">
+        The widget sends messages to your Express server. ChatService resolves the configured provider and forwards the request. Responses stream back via SSE.
+      </p>
+    </div>
+  </section>
+
+  <section class="quickstart" id="quickstart">
+    <h2>Quick Start</h2>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h4>Clone</h4>
+        <div class="step-code">git clone https://github.com/devtony42/chatbot-drop.git</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h4>Install</h4>
+        <div class="step-code">cd chatbot-drop && npm install</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h4>Configure</h4>
+        <p>Copy the example env and add your API key.</p>
+        <div class="step-code">cp .env.example .env</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h4>Run</h4>
+        <div class="step-code">npm run dev</div>
+        <p style="margin-top: 8px;">Open <code style="background: var(--bg-card); padding: 2px 6px; border-radius: 4px;">http://localhost:3000</code> — the demo page has a working chat widget.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>
+      Built by <a href="https://github.com/devtony42">Tony Goggin</a> ·
+      <a href="https://github.com/devtony42/chatbot-drop">Source</a> ·
+      MIT License
+    </p>
+  </footer>
+</body>
+</html>
