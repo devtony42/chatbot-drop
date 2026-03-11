@@ -13,3 +13,6 @@ export {
 } from "./config.js";
 
 export type { ServerConfig, ProviderConfig, AppConfig } from "./config.js";
+
+export type { Session } from "./session.js";
+export { CreateSessionSchema, SessionMessageSchema } from "./session.js";
