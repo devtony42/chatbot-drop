@@ -4,8 +4,14 @@ import helmet from "helmet";
 import type { AppConfig } from "./types/index.js";
 import { ProviderRegistry } from "./services/provider-registry.js";
 import { ChatService } from "./services/chat-service.js";
+import { SessionStore } from "./services/session-store.js";
 import { ChatController } from "./controllers/chat-controller.js";
-import { createChatRoutes, createHealthRoutes } from "./routes/index.js";
+import { SessionController } from "./controllers/session-controller.js";
+import {
+  createChatRoutes,
+  createHealthRoutes,
+  createSessionRoutes,
+} from "./routes/index.js";
 import { createRateLimiter } from "./middleware/rate-limiter.js";
 import { errorHandler } from "./middleware/error-handler.js";
 
@@ -28,14 +34,17 @@ export function createApp(config: AppConfig) {
     maxTokens: config.maxTokens,
     temperature: config.temperature,
   });
+  const sessionStore = new SessionStore();
   const chatController = new ChatController(chatService);
+  const sessionController = new SessionController(chatService, sessionStore);
 
   // Routes
   app.use("/api/chat", createChatRoutes(chatController));
+  app.use("/api/sessions", createSessionRoutes(sessionController));
   app.use("/api/health", createHealthRoutes(registry));
 
   // Error handling (must be last)
   app.use(errorHandler);
 
-  return { app, registry };
+  return { app, registry, sessionStore };
 }
