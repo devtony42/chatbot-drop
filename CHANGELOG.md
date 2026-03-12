@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0] — 2026-03-12
+
+### Added
+- Multi-tenant support with per-tenant API keys and config overrides
+- Tenant CRUD admin routes (`POST/GET/DELETE /api/tenants`) protected by `ADMIN_API_KEY`
+- Tenant auth middleware — reads `x-api-key` header to identify tenants
+- Per-tenant `systemPrompt`, `provider`, `model`, `maxTokens`, `temperature` overrides
+- `tenantId` tracking on sessions for tenant-scoped conversations
+- `data-api-key` attribute on the embeddable widget for tenant identification
+- SHA-256 hashed API key storage (raw key shown once at creation)
+- `TenantStore` in-memory store with create, findByApiKey, get, list, delete
+- Unit tests for `TenantStore`
+- `ADMIN_API_KEY` environment variable for admin route protection
+
 ## [0.1.0] — 2026-03-10
 
 ### Added
