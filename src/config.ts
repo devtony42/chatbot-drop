@@ -13,6 +13,7 @@ export function loadConfig(): AppConfig {
       corsOrigins: process.env.CORS_ORIGINS?.split(",").map((s) => s.trim()),
       rateLimitWindowMs: intOrUndefined(process.env.RATE_LIMIT_WINDOW_MS),
       rateLimitMaxRequests: intOrUndefined(process.env.RATE_LIMIT_MAX),
+      adminApiKey: process.env.ADMIN_API_KEY,
     },
     providers: {
       default: process.env.DEFAULT_PROVIDER,

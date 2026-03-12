@@ -1,18 +1,25 @@
 import type { Request, Response } from "express";
-import type { ChatService } from "../services/chat-service.js";
+import type { ChatService, ChatOverrides } from "../services/chat-service.js";
 import { SessionStore, SessionNotFoundError } from "../services/session-store.js";
+import type { TenantStore } from "../services/tenant-store.js";
 
 export class SessionController {
   private readonly chatService: ChatService;
   private readonly sessionStore: SessionStore;
+  private readonly tenantStore: TenantStore;
 
-  constructor(chatService: ChatService, sessionStore: SessionStore) {
+  constructor(
+    chatService: ChatService,
+    sessionStore: SessionStore,
+    tenantStore: TenantStore,
+  ) {
     this.chatService = chatService;
     this.sessionStore = sessionStore;
+    this.tenantStore = tenantStore;
   }
 
-  createSession = (_req: Request, res: Response): void => {
-    const session = this.sessionStore.create();
+  createSession = (req: Request, res: Response): void => {
+    const session = this.sessionStore.create(req.tenant?.id);
     res.status(201).json({
       sessionId: session.id,
       createdAt: new Date(session.createdAt).toISOString(),
@@ -49,9 +56,11 @@ export class SessionController {
       });
 
       const session = this.sessionStore.get(sessionId)!;
+      const overrides = this.getTenantOverrides(session.tenantId);
       const response = await this.chatService.sendMessage(
         session.messages,
         provider,
+        overrides,
       );
 
       this.sessionStore.addMessage(sessionId, {
@@ -87,6 +96,7 @@ export class SessionController {
       });
 
       const session = this.sessionStore.get(sessionId)!;
+      const overrides = this.getTenantOverrides(session.tenantId);
 
       res.setHeader("Content-Type", "text/event-stream");
       res.setHeader("Cache-Control", "no-cache");
@@ -98,6 +108,7 @@ export class SessionController {
         for await (const chunk of this.chatService.streamMessage(
           session.messages,
           provider,
+          overrides,
         )) {
           fullContent += chunk.content;
           res.write(`data: ${JSON.stringify(chunk)}\n\n`);
@@ -128,4 +139,19 @@ export class SessionController {
     }
     res.status(204).end();
   };
+
+  private getTenantOverrides(tenantId?: string): ChatOverrides | undefined {
+    if (!tenantId) return undefined;
+
+    const tenant = this.tenantStore.get(tenantId);
+    if (!tenant) return undefined;
+
+    return {
+      systemPrompt: tenant.systemPrompt,
+      provider: tenant.provider,
+      model: tenant.model,
+      maxTokens: tenant.maxTokens,
+      temperature: tenant.temperature,
+    };
+  }
 }

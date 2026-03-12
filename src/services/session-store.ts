@@ -29,9 +29,10 @@ export class SessionStore {
     this.startCleanup();
   }
 
-  create(): Session {
+  create(tenantId?: string): Session {
     const session: Session = {
       id: randomUUID(),
+      tenantId,
       messages: [],
       createdAt: Date.now(),
       lastActiveAt: Date.now(),

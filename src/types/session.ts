@@ -3,6 +3,7 @@ import type { ChatMessage } from "./provider.js";
 
 export interface Session {
   id: string;
+  tenantId?: string;
   messages: ChatMessage[];
   createdAt: number;
   lastActiveAt: number;
