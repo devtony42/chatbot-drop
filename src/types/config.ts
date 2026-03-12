@@ -6,6 +6,7 @@ export const ServerConfigSchema = z.object({
   corsOrigins: z.array(z.string()).default(["*"]),
   rateLimitWindowMs: z.number().int().positive().default(60_000),
   rateLimitMaxRequests: z.number().int().positive().default(20),
+  adminApiKey: z.string().min(16).optional(),
 });
 
 export const ProviderConfigSchema = z.object({

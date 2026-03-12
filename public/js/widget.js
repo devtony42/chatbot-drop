@@ -9,7 +9,8 @@
  *           data-server="https://your-server.com"
  *           data-title="Chat with us"
  *           data-greeting="Hi! How can I help?"
- *           data-stream="true">
+ *           data-stream="true"
+ *           data-api-key="your-tenant-api-key">
  *   </script>
  */
 (function () {
@@ -21,6 +22,15 @@
   const greeting =
     script?.getAttribute("data-greeting") || "Hi! How can I help you today?";
   const useStream = script?.getAttribute("data-stream") !== "false";
+  const apiKey = script?.getAttribute("data-api-key") || "";
+
+  function getHeaders() {
+    const headers = { "Content-Type": "application/json" };
+    if (apiKey) {
+      headers["x-api-key"] = apiKey;
+    }
+    return headers;
+  }
 
   const messages = [];
   let isWaiting = false;
@@ -116,7 +126,7 @@
     try {
       const response = await fetch(`${serverUrl}/api/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getHeaders(),
         body: JSON.stringify({ messages }),
       });
 
@@ -149,7 +159,7 @@
     try {
       const response = await fetch(`${serverUrl}/api/chat/stream`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getHeaders(),
         body: JSON.stringify({ messages }),
       });
 
