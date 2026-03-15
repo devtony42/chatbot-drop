@@ -10,11 +10,9 @@ describe("TenantStore", () => {
       expect(tenant.id).toMatch(
         /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
       );
-      expect(rawApiKey).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
-      );
+      expect(rawApiKey).toMatch(/^[A-Za-z0-9_-]{43}$/); // base64url, 256-bit
       expect(tenant.apiKey).not.toBe(rawApiKey);
-      expect(tenant.apiKey).toHaveLength(64); // SHA-256 hex
+      expect(tenant.apiKey).toMatch(/^[0-9a-f]{64}:[0-9a-f]{128}$/); // scrypt salt:hash
       expect(tenant.name).toBe("Acme Corp");
       expect(tenant.createdAt).toBeGreaterThan(0);
     });
