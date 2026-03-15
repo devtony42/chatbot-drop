@@ -1,6 +1,13 @@
+import { timingSafeEqual } from "node:crypto";
 import type { Request, Response, NextFunction } from "express";
 import type { Tenant } from "../types/index.js";
 import type { TenantStore } from "../services/tenant-store.js";
+
+function safeCompare(a: string, b: string): boolean {
+  const aBuf = Buffer.from(a.padEnd(256));
+  const bBuf = Buffer.from(b.padEnd(256));
+  return timingSafeEqual(aBuf, bBuf);
+}
 
 declare module "express-serve-static-core" {
   interface Request {
@@ -40,7 +47,7 @@ export function createAdminAuth(adminApiKey: string) {
   return (req: Request, res: Response, next: NextFunction): void => {
     const apiKey = req.headers["x-api-key"];
 
-    if (!apiKey || apiKey !== adminApiKey) {
+    if (!apiKey || typeof apiKey !== "string" || !safeCompare(apiKey, adminApiKey)) {
       res.status(401).json({ error: "Invalid admin API key" });
       return;
     }

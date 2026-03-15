@@ -1,20 +1,23 @@
-import { randomUUID, createHash } from "node:crypto";
+import { randomUUID, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import type { Tenant } from "../types/index.js";
 import type { z } from "zod";
 import type { CreateTenantSchema } from "../types/tenant.js";
 
 /**
  * In-memory tenant store for multi-tenant API key management.
- * Stores hashed API keys — raw keys are only returned once at creation time.
+ * Stores scrypt-hashed API keys — raw keys are only returned once at creation time.
  */
 export class TenantStore {
   private readonly tenants = new Map<string, Tenant>();
-  private readonly keyIndex = new Map<string, string>();
+
+  private readonly SALT_LENGTH = 32;
+  private readonly KEY_LENGTH = 64;
+  private readonly SCRYPT_PARAMS = { N: 16384, r: 8, p: 1 };
 
   create(
     data: z.infer<typeof CreateTenantSchema>,
   ): { tenant: Tenant; rawApiKey: string } {
-    const rawApiKey = randomUUID();
+    const rawApiKey = randomBytes(32).toString("base64url");
     const hashedKey = this.hashKey(rawApiKey);
 
     const tenant: Tenant = {
@@ -30,16 +33,17 @@ export class TenantStore {
     };
 
     this.tenants.set(tenant.id, tenant);
-    this.keyIndex.set(hashedKey, tenant.id);
 
     return { tenant, rawApiKey };
   }
 
   findByApiKey(rawKey: string): Tenant | undefined {
-    const hashedKey = this.hashKey(rawKey);
-    const tenantId = this.keyIndex.get(hashedKey);
-    if (!tenantId) return undefined;
-    return this.tenants.get(tenantId);
+    for (const tenant of this.tenants.values()) {
+      if (this.verifyKey(rawKey, tenant.apiKey)) {
+        return tenant;
+      }
+    }
+    return undefined;
   }
 
   get(id: string): Tenant | undefined {
@@ -54,13 +58,22 @@ export class TenantStore {
     const tenant = this.tenants.get(id);
     if (!tenant) return false;
 
-    this.keyIndex.delete(tenant.apiKey);
     this.tenants.delete(id);
     return true;
   }
 
   private hashKey(raw: string): string {
-    return createHash("sha256").update(raw).digest("hex");
+    const salt = randomBytes(this.SALT_LENGTH);
+    const hash = scryptSync(raw, salt, this.KEY_LENGTH, this.SCRYPT_PARAMS);
+    return `${salt.toString("hex")}:${hash.toString("hex")}`;
+  }
+
+  private verifyKey(raw: string, stored: string): boolean {
+    const [saltHex, hashHex] = stored.split(":");
+    const salt = Buffer.from(saltHex, "hex");
+    const storedHash = Buffer.from(hashHex, "hex");
+    const derived = scryptSync(raw, salt, this.KEY_LENGTH, this.SCRYPT_PARAMS);
+    return timingSafeEqual(derived, storedHash);
   }
 }
 
