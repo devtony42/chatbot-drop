@@ -157,6 +157,8 @@ The widget uses CSS custom properties scoped to `.acw-container`. Override them 
 
 ## Configuration
 
+> ⚠️ **HTTPS required in production.** API keys are sent as request headers and must be protected by TLS. Render and Railway handle this automatically. If self-hosting, put the server behind a reverse proxy (nginx, Caddy) with a valid certificate.
+
 All configuration via environment variables (see `.env.example`):
 
 | Variable | Default | Description |
