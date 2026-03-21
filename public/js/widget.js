@@ -24,6 +24,11 @@
   const useStream = script?.getAttribute("data-stream") !== "false";
   const apiKey = script?.getAttribute("data-api-key") || "";
 
+  // Theming: optional data-color, data-radius, data-font-size
+  const themeColor    = script?.getAttribute("data-color")     || null;
+  const themeRadius   = script?.getAttribute("data-radius")    || null;
+  const themeFontSize = script?.getAttribute("data-font-size") || null;
+
   function getHeaders() {
     const headers = { "Content-Type": "application/json" };
     if (apiKey) {
@@ -35,10 +40,47 @@
   const messages = [];
   let isWaiting = false;
 
+  /**
+   * Apply data-color / data-radius / data-font-size as scoped CSS custom
+   * properties on the container element so they cascade into all .acw-* rules
+   * without touching the global stylesheet.
+   */
+  function applyTheme(container) {
+    if (themeColor) {
+      // Derive a slightly darker hover shade (15% luminance reduction).
+      container.style.setProperty("--acw-primary", themeColor);
+      container.style.setProperty("--acw-primary-hover", darkenHex(themeColor, 0.15));
+      container.style.setProperty("--acw-bg-user", themeColor);
+    }
+    if (themeRadius) {
+      container.style.setProperty("--acw-radius", themeRadius);
+    }
+    if (themeFontSize) {
+      container.style.setProperty("--acw-font-size", themeFontSize);
+    }
+  }
+
+  /**
+   * Darken a hex colour by `amount` (0–1 fraction).
+   * Falls back to the original value if the hex can't be parsed.
+   */
+  function darkenHex(hex, amount) {
+    const clean = hex.replace(/^#/, "");
+    if (!/^[0-9a-fA-F]{3,6}$/.test(clean)) return hex;
+    const full = clean.length === 3
+      ? clean.split("").map((c) => c + c).join("")
+      : clean;
+    const r = Math.max(0, Math.round(parseInt(full.slice(0, 2), 16) * (1 - amount)));
+    const g = Math.max(0, Math.round(parseInt(full.slice(2, 4), 16) * (1 - amount)));
+    const b = Math.max(0, Math.round(parseInt(full.slice(4, 6), 16) * (1 - amount)));
+    return `#${r.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${b.toString(16).padStart(2, "0")}`;
+  }
+
   function createWidget() {
     const container = document.createElement("div");
     container.className = "acw-container";
     container.innerHTML = buildWidgetHTML();
+    applyTheme(container);
     document.body.appendChild(container);
     return container;
   }
@@ -240,7 +282,7 @@
     return div.innerHTML;
   }
 
-  // Initialize
+  // Initialize from script tag attributes (standalone embed).
   function init() {
     const link = document.createElement("link");
     link.rel = "stylesheet";
@@ -250,6 +292,47 @@
     const container = createWidget();
     bindEvents(container);
   }
+
+  /**
+   * Public API — called by WordPress shortcode inline scripts to spawn
+   * additional widget instances with per-shortcode config overrides.
+   *
+   * @param {Object} cfg
+   * @param {string} [cfg.server]   - Backend URL
+   * @param {string} [cfg.color]    - Primary hex colour (e.g. "#7c3aed")
+   * @param {string} [cfg.radius]   - Border radius (e.g. "8px")
+   * @param {string} [cfg.fontSize] - Font size (e.g. "13px")
+   */
+  function initFromConfig(cfg) {
+    const baseUrl = cfg.server || serverUrl;
+
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = `${baseUrl}/css/widget.css`;
+    if (!document.querySelector(`link[href="${link.href}"]`)) {
+      document.head.appendChild(link);
+    }
+
+    const container = document.createElement("div");
+    container.className = "acw-container";
+    container.innerHTML = buildWidgetHTML();
+
+    if (cfg.color) {
+      container.style.setProperty("--acw-primary", cfg.color);
+      container.style.setProperty("--acw-primary-hover", darkenHex(cfg.color, 0.15));
+      container.style.setProperty("--acw-bg-user", cfg.color);
+    }
+    if (cfg.radius)   { container.style.setProperty("--acw-radius",    cfg.radius); }
+    if (cfg.fontSize) { container.style.setProperty("--acw-font-size", cfg.fontSize); }
+
+    document.body.appendChild(container);
+    bindEvents(container);
+  }
+
+  // Expose public API and flush any queued calls made before script loaded.
+  window.ChatbotDrop = window.ChatbotDrop || {};
+  window.ChatbotDrop.init = initFromConfig;
+  document.dispatchEvent(new CustomEvent("chatbotdrop:ready"));
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);

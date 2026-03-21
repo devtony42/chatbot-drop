@@ -72,16 +72,12 @@
 **Effort:** 1 day
 **Branch:** `feat/per-tenant-rate-limiting`
 
-#### 4. Custom CSS Theming via Shortcode / Widget Config
-**Why:** Every client wants their brand colors. Currently it requires editing the CSS file. This is a common ask in Upwork chatbot gigs.
-
-- Support `data-color`, `data-radius`, `data-font-size` attributes on the widget embed
-- Shortcode attributes pass through as CSS vars: `primary_color`, `border_radius`
-- Apply as scoped CSS custom properties on `.acw-container`
-- Document in README widget config table
-
-**Effort:** 0.5 day
-**Branch:** `feat/widget-theming`
+#### ~~4. Custom CSS Theming via Shortcode / Widget Config~~ ✅ Done
+- `data-color`, `data-radius`, `data-font-size` on the embed `<script>` tag
+- `color`, `radius`, `font_size` shortcode attributes in WP plugin
+- `--acw-font-size` CSS var added; `data-color` auto-derives hover shade
+- `window.ChatbotDrop.init(cfg)` public API exposed for multi-instance WP support
+- README widget options table + WP plugin README updated
 
 ---
 

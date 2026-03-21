@@ -150,7 +150,10 @@ Add this to any HTML page:
         data-server="https://your-server.com"
         data-title="Chat with us"
         data-greeting="Hi! How can I help?"
-        data-stream="true">
+        data-stream="true"
+        data-color="#7c3aed"
+        data-radius="8px"
+        data-font-size="13px">
 </script>
 ```
 
@@ -162,16 +165,24 @@ Add this to any HTML page:
 | `data-title` | `"Chat"` | Header title text |
 | `data-greeting` | `"Hi! How can I help you today?"` | Initial greeting message |
 | `data-stream` | `"true"` | Enable streaming responses |
+| `data-api-key` | `""` | Tenant API key |
+| `data-color` | `"#2563eb"` | Primary brand colour (hex) — auto-derives hover shade |
+| `data-radius` | `"12px"` | Border radius for panels and message bubbles |
+| `data-font-size` | `"14px"` | Base font size for messages and input field |
 
 ### Customizing Styles
 
-The widget uses CSS custom properties scoped to `.acw-container`. Override them in your stylesheet:
+Theme attributes (`data-color`, `data-radius`, `data-font-size`) are the fastest way to match your brand — no CSS required. They set scoped CSS custom properties on `.acw-container`, which cascade into all widget rules.
+
+For deeper customization, override the CSS vars directly in your stylesheet:
 
 ```css
 .acw-container {
-  --acw-primary: #7c3aed;      /* Purple theme */
+  --acw-primary: #7c3aed;
   --acw-primary-hover: #6d28d9;
-  --acw-radius: 8px;            /* Less rounded */
+  --acw-bg-message: #f3f0ff;
+  --acw-radius: 8px;
+  --acw-font-size: 13px;
 }
 ```
 
