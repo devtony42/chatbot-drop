@@ -5,7 +5,7 @@ Drop-in AI chatbot widget with multi-provider support. Embed in any website in u
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/devtony42/chatbot-drop)
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/template/from-repo?repo=devtony42/chatbot-drop)
 
-**[📖 Documentation](https://devtony42.github.io/chatbot-drop/)** · **[🎮 Live Demo](https://devtony42.github.io/chatbot-drop/demo.html)**
+**[📖 Documentation](https://devtony42.github.io/chatbot-drop/)** · **[🎮 Live Demo](https://devtony42.github.io/chatbot-drop/demo.html)** · **[⬇️ Download WP Plugin](https://github.com/devtony42/chatbot-drop/releases)**
 
 ## Features
 
@@ -60,6 +60,26 @@ test/
 ├── unit/            # Unit tests
 └── integration/     # API integration tests
 ```
+
+## WordPress Plugin
+
+Install the Chatbot Drop plugin to embed the widget on any page or post with a shortcode.
+
+**Download:** [Latest release](https://github.com/devtony42/chatbot-drop/releases) → `chatbot-drop-wp-<version>.zip`
+
+**Install:**
+1. WordPress Admin → Plugins → Add New → Upload Plugin
+2. Choose `chatbot-drop-wp-<version>.zip` → Install Now → Activate
+3. Go to **Settings → Chatbot Drop** and enter your server URL and API key
+4. Add `[chatbotdrop]` to any page or post
+
+**Build the zip yourself:**
+```bash
+./scripts/package-wp-plugin.sh
+# Output: dist/chatbot-drop-wp-<version>.zip
+```
+
+See [chatbot-drop-wp/README.md](chatbot-drop-wp/README.md) for the full shortcode reference.
 
 ## API Reference
 

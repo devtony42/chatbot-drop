@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0] — 2026-03-20
+
+### Added
+- `scripts/package-wp-plugin.sh` — builds a distributable `.zip` of the WordPress plugin; auto-reads version from plugin header
+- WordPress plugin section in main README with download link and build instructions
+- `chatbot-drop-wp/README.md` — full install steps, shortcode reference, and usage examples
+
 ## [0.2.0] — 2026-03-12
 
 ### Added
