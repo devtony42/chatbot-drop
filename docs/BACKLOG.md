@@ -55,16 +55,11 @@
 
 ### 🟠 P1 — Ship for v0.3 (needed before Upwork gigs start)
 
-#### 2. WP Plugin — README + Zip Package
-**Why:** The PHP code is done (`chatbot-drop-wp/`), but there's no README and no installable `.zip`. Clients expect to download and install a zip, not clone a repo.
-
-- Write `chatbot-drop-wp/README.md` — install steps, shortcode reference, FAQ
-- Add `Makefile` or `scripts/package-wp-plugin.sh` to zip the plugin for distribution
-- Add a "Download WP Plugin" link to the main README
+#### ~~2. WP Plugin — README + Zip Package~~ ✅ Done
+- `scripts/package-wp-plugin.sh` added — auto-detects version, outputs `dist/chatbot-drop-wp-<version>.zip`
+- `chatbot-drop-wp/README.md` was already complete
+- Main README updated with WordPress section + download link
 - Optional: submit to WP.org plugin directory (longer process, not urgent)
-
-**Effort:** 2–3 hours
-**Branch:** `feat/wp-plugin-packaging`
 
 #### 3. Rate Limiting Per Tenant
 **Why:** Without it, a single bad tenant can flood the AI provider and run up everyone's API bill. Critical before any real client deployments.
