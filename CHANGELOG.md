@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.4.0] — 2026-03-20
+
+### Added
+- Widget theming via `data-color`, `data-radius`, `data-font-size` attributes on the embed `<script>` tag
+- `data-color` auto-derives a darker hover shade (15% luminance reduction) — no manual `--acw-primary-hover` needed
+- `--acw-font-size` CSS custom property added; used by `.acw-message` and `.acw-input`
+- `window.ChatbotDrop.init(cfg)` public API exposed — WordPress shortcode inline scripts can now spawn themed instances
+- WP shortcode: `color`, `radius`, `font_size` attributes pass through to the widget
+- README widget options table updated with all 8 `data-*` attributes
+- WP plugin README updated with theming shortcode examples
+
 ## [0.3.0] — 2026-03-20
 
 ### Added
