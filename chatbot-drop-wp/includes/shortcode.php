@@ -25,22 +25,28 @@ add_shortcode( 'chatbotdrop', 'chatbotdrop_shortcode' );
 function chatbotdrop_shortcode( $atts ) {
 	$atts = shortcode_atts(
 		array(
-			'server'   => '',
-			'api_key'  => '',
-			'title'    => '',
-			'greeting' => '',
-			'stream'   => '',
+			'server'    => '',
+			'api_key'   => '',
+			'title'     => '',
+			'greeting'  => '',
+			'stream'    => '',
+			'color'     => '',
+			'radius'    => '',
+			'font_size' => '',
 		),
 		$atts,
 		'chatbotdrop'
 	);
 
 	// Resolve values: shortcode attr > WP option > hardcoded default.
-	$server   = esc_url( $atts['server']   ?: get_option( 'chatbotdrop_server_url', '' ) );
-	$api_key  = sanitize_text_field( $atts['api_key']  ?: get_option( 'chatbotdrop_api_key', '' ) );
-	$title    = sanitize_text_field( $atts['title']    ?: get_option( 'chatbotdrop_title', 'Chat with us' ) );
-	$greeting = sanitize_text_field( $atts['greeting'] ?: get_option( 'chatbotdrop_greeting', 'Hi! How can I help you today?' ) );
-	$stream   = sanitize_text_field( $atts['stream']   ?: get_option( 'chatbotdrop_stream', 'true' ) );
+	$server    = esc_url( $atts['server']   ?: get_option( 'chatbotdrop_server_url', '' ) );
+	$api_key   = sanitize_text_field( $atts['api_key']  ?: get_option( 'chatbotdrop_api_key', '' ) );
+	$title     = sanitize_text_field( $atts['title']    ?: get_option( 'chatbotdrop_title', 'Chat with us' ) );
+	$greeting  = sanitize_text_field( $atts['greeting'] ?: get_option( 'chatbotdrop_greeting', 'Hi! How can I help you today?' ) );
+	$stream    = sanitize_text_field( $atts['stream']   ?: get_option( 'chatbotdrop_stream', 'true' ) );
+	$color     = sanitize_hex_color( $atts['color'] );
+	$radius    = sanitize_text_field( $atts['radius'] );
+	$font_size = sanitize_text_field( $atts['font_size'] );
 
 	if ( empty( $server ) ) {
 		return '<!-- Chatbot Drop: server URL not configured. Visit Settings > Chatbot Drop. -->';
@@ -93,6 +99,9 @@ function chatbotdrop_shortcode( $atts ) {
 		'stream'   => $stream === 'true',
 		'apiKey'   => $api_key,
 	);
+	if ( $color )     { $config['color']    = $color; }
+	if ( $radius )    { $config['radius']   = $radius; }
+	if ( $font_size ) { $config['fontSize'] = $font_size; }
 
 	return sprintf(
 		'<script id="%s" type="application/json">%s</script>',

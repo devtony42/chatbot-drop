@@ -22,13 +22,16 @@ Drop-in AI chatbot widget for WordPress. Add a floating chat bubble to any page 
 
 All attributes are optional and override the admin defaults:
 
-| Attribute  | Description                              | Example                          |
-|------------|------------------------------------------|----------------------------------|
-| `server`   | Backend URL                              | `https://chat.yoursite.com`      |
-| `api_key`  | Tenant API key                           | `ten_abc123`                     |
-| `title`    | Widget header title                      | `Ask us anything`                |
-| `greeting` | First message shown when widget opens    | `Hi! How can I help?`            |
-| `stream`   | Enable streaming (`true` / `false`)      | `true`                           |
+| Attribute   | Description                              | Example                          |
+|-------------|------------------------------------------|----------------------------------|
+| `server`    | Backend URL                              | `https://chat.yoursite.com`      |
+| `api_key`   | Tenant API key                           | `ten_abc123`                     |
+| `title`     | Widget header title                      | `Ask us anything`                |
+| `greeting`  | First message shown when widget opens    | `Hi! How can I help?`            |
+| `stream`    | Enable streaming (`true` / `false`)      | `true`                           |
+| `color`     | Primary brand colour (hex)               | `#7c3aed`                        |
+| `radius`    | Border radius for panels and bubbles     | `8px`                            |
+| `font_size` | Base font size for messages and input    | `13px`                           |
 
 ### Examples
 
@@ -36,6 +39,8 @@ All attributes are optional and override the admin defaults:
 [chatbotdrop]
 [chatbotdrop title="Support" greeting="How can we help you today?"]
 [chatbotdrop server="https://chat.example.com" api_key="ten_xyz" stream="false"]
+[chatbotdrop color="#7c3aed" radius="8px" font_size="13px"]
+[chatbotdrop color="#059669" title="Sales Chat" greeting="Hi! Ready to get started?"]
 ```
 
 ## Notes
